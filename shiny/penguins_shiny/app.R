@@ -12,16 +12,30 @@ ui <- fluidPage(
         sidebarPanel("put my widgets here!",
                      radioButtons(inputId = "penguin_species",
                                   label = "Choose penguin species:",
-                                  choice = c("Adelie", "Chinstrap", "Gentoo"))
+                                  choices = c("Adelie", "COOL CHINSTRAP PENGUINS" = "Chinstrap", "Gentoo"))
                      ),
-        mainPanel("Here's my graph!")
+        mainPanel("Here's my graph!", 
+                  plotOutput(outputId = "penguin_plot"))
     )
     
 )
 
 
 # Create the server function
-server <- function(input, output) {}
+server <- function(input, output) {
+    
+    penguin_select <- reactive({
+        penguins %>% 
+            filter(species == input$penguin_species)
+        
+    })
+    
+    output$penguin_plot <- renderPlot({
+        
+        ggplot(data = penguin_select(), aes(x = flipper_length_mm, y = body_mass_g)) +
+            geom_point()
+    })
+}
 
 
 # Combine into an app
